@@ -136,7 +136,7 @@ def doc_table():
         dir_path = os.path.dirname(os.path.realpath(__file__))
 
         # Create file path for CSV file
-        xlsx_file_path_1 = os.path.join(dir_path, 'pages\\sample_excel.xlsx')
+        xlsx_file_path_1 = os.path.join(dir_path, 'pages/sample_excel.xlsx')
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
         #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
         df1=pd.read_excel(xlsx_file_path_1)
@@ -163,7 +163,7 @@ def total_by_date():
         dir_path = os.path.dirname(os.path.realpath(__file__))
 
         #Create file path for CSV file
-        xlsx_file_path = os.path.join(dir_path, 'pages\\sample_excel.xlsx')
+        xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
         #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
         df1=pd.read_excel(xlsx_file_path)
         df1["Total Amount"] = df1["Total Amount"].str.replace("R","",regex=False)
@@ -176,7 +176,7 @@ def total_by_date():
         dir_path = os.path.dirname(os.path.realpath(__file__))
 
         #Create file path for CSV file
-        xlsx_file_path = os.path.join(dir_path, 'pages\\sample_excel.xlsx')
+        xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
         #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
         df1=pd.read_excel(xlsx_file_path)
         df1["Total Amount"] = df1["Total Amount"].str.replace("R","",regex=False)
@@ -192,7 +192,7 @@ def due_by_invoice():
         dir_path = os.path.dirname(os.path.realpath(__file__))
 
         #Create file path for CSV file
-        xlsx_file_path = os.path.join(dir_path, 'pages\\sample_excel.xlsx')
+        xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
         #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
         df1=pd.read_excel(xlsx_file_path)
         tot_by_date = df1.groupby(by=['Company Name']).sum([['Invoice Number']])
@@ -203,7 +203,7 @@ def due_by_invoice():
         dir_path = os.path.dirname(os.path.realpath(__file__))
 
         #Create file path for CSV file
-        xlsx_file_path = os.path.join(dir_path, 'pages\\sample_excel.xlsx')
+        xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
         #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
         df1=pd.read_excel(xlsx_file_path)
         df1["Total Amount"] = df1["Total Amount"].str.replace("R","",regex=False)
@@ -217,7 +217,7 @@ def last_analysis():
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
     #Create file path for CSV file
-    xlsx_file_path = os.path.join(dir_path, 'pages\\sample_excel.xlsx')
+    xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
     #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
     df1=pd.read_excel(xlsx_file_path)
     all_documents = int(len(df1.index))
