@@ -250,7 +250,7 @@ for uploaded_file in uploaded_files:
 
 # adding a button
 if st.button('Start Data extraction'):
-    extract_content_keyword(pdf_dir_path)
+    extract_content_keyword(pdf_dir)
 
     # video
     # video_file = open("Analytics.mp4", "rb").read()
