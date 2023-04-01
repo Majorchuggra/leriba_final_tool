@@ -18,6 +18,7 @@ import altair as alt
 import base64
 from numerize.numerize import numerize
 from datetime import date, datetime
+from flask import redirect
 
 
 st.set_page_config(
@@ -286,4 +287,9 @@ def graph_refiner(df4, x="date", y="documents"):
     )
 
     return (lines + points + tooltips).interactive()
-
+st.sidebar.write("Logout")
+if st.sidebar.button("Click to Logout"):
+    # Clear session state
+    session_state = st.session_state
+    session_state.clear()
+    redirect("https://example.com/login.html")
