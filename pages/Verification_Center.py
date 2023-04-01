@@ -88,16 +88,6 @@ add_logo("lg.png")
 #     """, unsafe_allow_html=True)
 
 
-selected = option_menu(
-    menu_title=None,
-    options=["Home", "About Us", "Services", "Contact Us", "Logout"],
-    icons=["house", "book", "gear", "envelope", "key"],
-    menu_icon="cast",
-    default_index=0,
-    orientation="horizontal"
-)
-
-
 # save uploaded file
 def save_uploaded_file(pdf_files):
     FILE_DIR = os.path.dirname(os.path.abspath(__file__))
