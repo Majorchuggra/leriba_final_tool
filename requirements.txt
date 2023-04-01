@@ -13,3 +13,4 @@ seaborn==0.12.2
 streamlit==1.20.0
 streamlit_option_menu==0.3.2
 XlsxWriter==3.0.3
+Flask==2.2.3
