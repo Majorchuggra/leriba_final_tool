@@ -16,6 +16,7 @@ import base64
 from streamlit_option_menu import option_menu
 from datetime import date as dt
 import time
+from flask import redirect
 
 
 hide_streamlit_style = """
@@ -184,7 +185,12 @@ def extract_content_keyword():
 
 
 # Press the green button in the gutter to run the script.
-
+st.sidebar.write("Logout")
+if st.sidebar.button("Click to Logout"):
+    # Clear session state
+    session_state = st.session_state
+    session_state.clear()
+    redirect("https://example.com/login.html")
 
 # adding a button
 if st.button('Start Verification'):
