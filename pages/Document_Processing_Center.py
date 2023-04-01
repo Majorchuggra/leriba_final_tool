@@ -17,6 +17,7 @@ from streamlit_option_menu import option_menu
 from datetime import date as dt
 import time
 import tempfile
+from flask import redirect
 hide_streamlit_style = """
             <style>
             
@@ -236,7 +237,12 @@ for uploaded_file in uploaded_files:
         
             
     # Press the green button in the gutter to run the script.
-
+st.sidebar.write("Logout")
+if st.sidebar.button("Click to Logout"):
+    # Clear session state
+    session_state = st.session_state
+    session_state.clear()
+    redirect("https://example.com/login.html")
 
 # adding a button
 if st.button('Start Data extraction'):
