@@ -87,6 +87,8 @@ add_logo("lg.png")
 #     </style>
 #     """, unsafe_allow_html=True)
 
+
+
 pdf_dir="pdf_files"
 
 def save_pdf_file(uploaded_file):
@@ -171,10 +173,6 @@ def extract_content_keyword(pdf_dir_path):
             end = [' ']
             keyword4 = get_keyword(start, end, text)
                 
-            start = [' ']
-            end = [' 63']
-            keyword5 = get_keyword(start, end, text)
-                
             start = ['FNB']
             end = ['DATE:']
             keyword6 = get_keyword(start, end, text)
@@ -185,7 +183,7 @@ def extract_content_keyword(pdf_dir_path):
             keyword7 = get_keyword(start, end, text)
                 
             # create a list with the keywords extracted from current document.
-            my_list = [keyword1, keyword2,keyword3,keyword4,keyword5,keyword6,keyword7]
+            my_list = [keyword1, keyword2,keyword3,keyword4,keyword6,keyword7]
             # append my list as a row in the dataframe.
             my_list = pd.Series(my_list)
 
@@ -203,9 +201,8 @@ def extract_content_keyword(pdf_dir_path):
                                                 1:'Invoice Number',
                                                 2:'Date',
                                                 3:'Due Date',
-                                                4:'Bank Name',
                                                 5:'Account Number',
-                                                6:'Total Amount'})
+                                                5:'Total Amount'})
     #save_path = ('C:\\Users\\Majoro\\Videos\\major skul\\leriba\\tool\\StreamlitDataExtraction-main\\sample_docs')
     #os.chdir(save_path)
     # Get current directory path
@@ -237,12 +234,7 @@ for uploaded_file in uploaded_files:
         
             
     # Press the green button in the gutter to run the script.
-st.sidebar.write("Logout")
-if st.sidebar.button("Click to Logout"):
-    # Clear session state
-    session_state = st.session_state
-    session_state.clear()
-    redirect("https://example.com/login.html")
+
 
 # adding a button
 if st.button('Start Data extraction'):
@@ -254,3 +246,9 @@ if st.button('Start Data extraction'):
 
 else:
     st.write('Click above button to start')
+    
+    
+st.sidebar.write("Logout")
+if st.sidebar.button("Click to Logout"):
+    # Clear session state
+    redirect("https://leribaai.000webhostapp.com/")
