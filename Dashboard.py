@@ -88,6 +88,8 @@ add_logo("lg.png")
 #     </style>
 #     """, unsafe_allow_html=True)
 
+
+
 # if selected == "Home"
 #     st.write("Home")
 #     st.write("About")
@@ -158,6 +160,7 @@ def total_by_date():
         xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
         #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
         df1=pd.read_excel(xlsx_file_path)
+        df1=df1.head(6)
         df1["Total Amount"] = df1["Total Amount"].str.replace("R","",regex=False)
         df1["Total Amount"] = df1["Total Amount"].str.replace(" ","",regex=True).astype(float)
         tot_by_date = df1.groupby(by=['Company Name']).sum([['Total Amount']])
@@ -171,6 +174,7 @@ def total_by_date():
         xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
         #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
         df1=pd.read_excel(xlsx_file_path)
+        df1=df1.head(6)
         df1["Total Amount"] = df1["Total Amount"].str.replace("R","",regex=False)
         df1["Total Amount"] = df1["Total Amount"].str.replace(" ","",regex=True).astype(float)
         df4 = df1.groupby(by='Company Name').sum()[['Total Amount']].reset_index()
@@ -187,6 +191,7 @@ def due_by_invoice():
         xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
         #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
         df1=pd.read_excel(xlsx_file_path)
+        df1=df1.head(6)
         tot_by_date = df1.groupby(by=['Company Name']).sum([['Invoice Number']])
         fig_total = px.bar(tot_by_date,x=tot_by_date.index,y='Invoice Number',title='<b>Total Invoices by Due Date</b>',color_discrete_sequence=['#25AAD5'] * len(tot_by_date),template='plotly_white')
         fig_total.update_layout(xaxis=dict(tickmode='linear'),plot_bgcolor='rgba(0,0,0,0)',yaxis=(dict(showgrid=False)),)
@@ -198,6 +203,7 @@ def due_by_invoice():
         xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
         #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
         df1=pd.read_excel(xlsx_file_path)
+        df1=df1.head(6)
         df1["Total Amount"] = df1["Total Amount"].str.replace("R","",regex=False)
         df1["Total Amount"] = df1["Total Amount"].str.replace(" ","",regex=True).astype(float)
         df4 = df1.groupby(by='Invoice Number').sum()[['Total Amount']].reset_index()
@@ -232,13 +238,41 @@ def last_analysis():
     with total3:
         #st.image('images/hand.png',use_column_width='Auto')
         st.metric(label= 'Pending Documents',value=numerize(pending_documents,2))
+        
+def donut_chart():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
 
+    #Create file path for CSV file
+    xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
+    # Read CSV file
+    df1=pd.read_excel(xlsx_file_path)
 
+    # Get the total number of rows
+    total_rows = len(df1)
+
+    # Create a donut chart of company names
+    companies = df1["Company Name"].value_counts()
+    fig = go.Figure(data=[go.Pie(labels=companies.index, values=companies.values, hole=0.5, textinfo="none")])
+
+    # Update the layout of the donut chart
+    fig.update_layout(title="Uploaded Documents by each Company",
+                    annotations=[dict(text="Total: " + str(total_rows), font_size=20, showarrow=False)])
+
+    # Display the total number of rows and the donut chart
+    st.write("Total number of rows:", total_rows)
+    st.plotly_chart(fig)
+        
+st.sidebar.write("Logout")
+if st.sidebar.button("Click to Logout"):
+    # Clear session state
+    redirect("https://leribaai.000webhostapp.com/")
 # st.subheader("Number Of Processed Documents")
 # extract_insert_to_xlsx_file()
 # pie_chart_create()
+
 doc_table()
 doc_table_1()
+donut_chart()
 #area_analys()
 total_by_date()
 due_by_invoice()
@@ -287,9 +321,4 @@ def graph_refiner(df4, x="date", y="documents"):
     )
 
     return (lines + points + tooltips).interactive()
-st.sidebar.write("Logout")
-if st.sidebar.button("Click to Logout"):
-    # Clear session state
-    session_state = st.session_state
-    session_state.clear()
-    redirect("https://example.com/login.html")
+
