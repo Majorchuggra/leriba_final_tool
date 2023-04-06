@@ -14,10 +14,14 @@ import pdfplumber                # extracts information from .pdf documents
 import numpy as np
 import base64
 from streamlit_option_menu import option_menu
-from datetime import date as dt
+from datetime import datetime, timedelta
 import time
 import tempfile
 from flask import redirect
+from io import BytesIO
+import base64
+import io
+import math
 hide_streamlit_style = """
             <style>
             
@@ -109,32 +113,22 @@ def save_pdf_file(uploaded_file):
 
         # Return the directory path
         return pdf_dir_path
-# save uploaded file
-def save_uploaded_file(pdf_files):
-    FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-    PARENT_DIR = os.path.join(FILE_DIR,os.pardir)
-    with open(os.path.join(PARENT_DIR,'invoices', pdf_files.name), "wb") as f:
-        f.write(pdf_files.getbuffer())
-    return st.success("File saved")
-
-def read_pdf(file):
-    pdf_reader = PyPDF2.PdfFileReader(file)
-    page_count = pdf_reader.getNumPages()
-    text = ""
-    for i in range(page_count):
-        page = pdf_reader.getPage(i)
-        text += page.extractText()
-    return text
+    # If no file was uploaded, return None
+    return None
 
 
-        # Display the data
-        #st.write(f"**{uploaded_file.name}**")
-        
-    
-            #st.write(text)
-    # file_details = {"filename":uploaded_files.name, "filetype":uploaded_files.type}
-    #save_uploaded_file(uploaded_files)
-
+def get_processing_time(start_time):
+    end_time = datetime.now()
+    processing_time = end_time - start_time
+    processing_time.total_seconds()
+    seconds = processing_time.total_seconds()
+    # Round the float value to 1 significant figure
+    rounded_seconds = round(seconds, -int(math.floor(math.log10(abs(seconds))))+1)
+    # Create a new timedelta object using the rounded number of seconds
+    rounded_processing_time = float(rounded_seconds)
+    # Format the float value as a string with one digit after the decimal point
+    formatted_processing_time = "{:.1f}".format(rounded_processing_time)
+    return formatted_processing_time
 
 #NEW EXTRACTION OF DATA
 def get_keyword(start, end, text):
@@ -146,7 +140,8 @@ def get_keyword(start, end, text):
             continue
 #extracting....
 def extract_content_keyword(pdf_dir_path):
-    
+    start_time = datetime.now()
+    # data extraction code
     my_dataframe = pd.DataFrame()
     for file_name in os.listdir(pdf_dir_path):
         if file_name.endswith(".pdf"):
@@ -173,10 +168,6 @@ def extract_content_keyword(pdf_dir_path):
             end = [' ']
             keyword4 = get_keyword(start, end, text)
                 
-            start = [' ']
-            end = [' 63']
-            keyword5 = get_keyword(start, end, text)
-                
             start = ['FNB']
             end = ['DATE:']
             keyword6 = get_keyword(start, end, text)
@@ -185,29 +176,31 @@ def extract_content_keyword(pdf_dir_path):
             start = ['subtotal:']
             end = [' TOTAL']
             keyword7 = get_keyword(start, end, text)
+            
+            processing_time = get_processing_time(start_time)
                 
             # create a list with the keywords extracted from current document.
-            my_list = [keyword1, keyword2,keyword3,keyword4,keyword5,keyword6,keyword7]
+            my_list = [keyword1, keyword2,keyword3,keyword4,keyword6,keyword7,processing_time]
             # append my list as a row in the dataframe.
             my_list = pd.Series(my_list)
 
             # append the list of keywords as a row to my dataframe.
             my_dataframe = my_dataframe.append(my_list, ignore_index=True)
-    progress_text = "Operation in progress. Please wait."
+    progress_text = "Data extraction in progress..."
     my_bar = st.progress(0, text=progress_text)
 
     for percent_complete in range(100):
         time.sleep(0.1)
         my_bar.progress(percent_complete + 1, text=progress_text)
-    st.write("Data Extracted Successfully")
+    st.write("Data extraction complete")
         # rename dataframe columns using dictionaries.
     my_dataframe = my_dataframe.rename(columns={0:'Company Name',
                                                 1:'Invoice Number',
                                                 2:'Date',
                                                 3:'Due Date',
-                                                4:'Bank Name',
-                                                5:'Account Number',
-                                                6:'Total Amount'})
+                                                4:'Account Number',
+                                                5:'Total Amount',
+                                                6:'Processing Time(s)'})
     #save_path = ('C:\\Users\\Majoro\\Videos\\major skul\\leriba\\tool\\StreamlitDataExtraction-main\\sample_docs')
     #os.chdir(save_path)
     # Get current directory path
@@ -218,9 +211,15 @@ def extract_content_keyword(pdf_dir_path):
 
         # extract my dataframe to an .xlsx file!
     my_dataframe.to_excel(xlsx_file_path, sheet_name = 'my dataframe')
-    st.write("")
-    st.table(my_dataframe)
-
+    #st.write("")
+    #st.table(my_dataframe)
+    # delete the PDFs after extracting data
+    for file_name in os.listdir(pdf_dir_path):
+        if file_name.endswith(".pdf"):
+            file_path = os.path.join(pdf_dir_path, file_name)
+            os.remove(file_path)
+    #st.write("PDF files deleted.")
+    return my_dataframe
  # Press Ctrl+F8 to toggle the breakpoint.
 
 # files
@@ -235,6 +234,8 @@ for uploaded_file in uploaded_files:
         
         # Read the data of the PDF file
         pdf_dir_path = save_pdf_file(uploaded_file)
+        if pdf_dir_path is not None:
+            pdf_dir = pdf_dir_path
         # Pass the directory path to the other function
         
             
@@ -243,12 +244,23 @@ for uploaded_file in uploaded_files:
 
 # adding a button
 if st.button('Start Data extraction'):
-    extract_content_keyword(pdf_dir)
+    if pdf_dir == "pdf_files":
+        st.write("No PDF files uploaded.")
+    else:
+        extracted_data = extract_content_keyword(pdf_dir)
+        # convert DataFrame to Excel format
+        excel_file = io.BytesIO()
+        extracted_data.to_excel(excel_file, index=False, sheet_name='Sheet1')
+        excel_file.seek(0)
 
-    # video
-    # video_file = open("Analytics.mp4", "rb").read()
-    # st.video(video_file)
+        # generate download link
+        b64 = base64.b64encode(excel_file.read()).decode()
+        href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="extracted_data.xlsx">Download Excel File</a>'
 
+        # create download button
+        st.download_button(label='Export Data as Excel', data=excel_file, file_name='extracted_data.xlsx', mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        st.write("")
+        st.table(extracted_data)
 else:
     st.write('Click above button to start')
     
