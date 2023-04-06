@@ -118,21 +118,14 @@ add_logo("lg.png")
          #                   default=df1['Invoice Number'].unique())
 #df1=df1.query("Invoice Number == @invoice_filter")
 
-# NEW MODIFICATION
 def doc_table():
-    # Get current directory path
+    # Existing code
     dir_path = os.path.dirname(os.path.realpath(__file__))
-
-    # Create file path for CSV file
     xlsx_file_path = os.path.join(dir_path, 'style.css')
     with open(xlsx_file_path) as f:
-         # Get current directory path
         dir_path = os.path.dirname(os.path.realpath(__file__))
-
-        # Create file path for CSV file
         xlsx_file_path_1 = os.path.join(dir_path, 'pages/sample_excel.xlsx')
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-        #excel_file= 'C:\\Users\\Majoro\\Videos\\major skul\\Leriba\\tool\\StreamlitDataExtraction-main\\sample_docs\\sample_excel.xlsx'
         df1=pd.read_excel(xlsx_file_path_1)
         all_documents = int(len(df1.index))
         df1.dropna(inplace=True)
@@ -144,7 +137,75 @@ def doc_table():
         col1.metric("All Processed Documents", all_documents,"100%")
         col2.metric("Accurately Processed Documents", accurately_processed,str(round(float(accurately_processed/all_documents * 100),1)) + "%")
         col3.metric("Inaccurately Processed Documents", inaccurately_processed,str(round(float(inaccurately_processed/all_documents *100),1)) +"%")
-        #st.dataframe(df1)
+        Q2_,Q3_ = st.columns(2)
+        with Q2_:
+            # New code for donut chart
+            labels = ['Accurately Processed Documents', 'Inaccurately Processed Documents']
+            values = [accurately_processed, inaccurately_processed]
+            colors = ['#00A300', '#d62728']
+
+            fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.5, showlegend=False)])
+            fig.update_traces(marker=dict(colors=colors))
+
+            fig.update_layout(
+                width=500,
+                height=400,
+                title={
+                    'text': '<b>Processed Documents</b>',
+                    'y': 0.9,
+                    'x': 0.5,
+                    'xanchor': 'center',
+                    'yanchor': 'top'
+                }
+            )
+            # Line chart
+            x = ['Accurately Processed Documents', 'Inaccurately Processed Documents']
+            y = [accurately_processed, inaccurately_processed]
+            fig.add_trace(go.Scatter(x=x, y=y, mode='lines', line=dict(color='#00A300', width=4), showlegend=False))
+
+            # Show plot
+            st.plotly_chart(fig)
+            
+        with Q3_:
+               
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+
+            # Create file path for CSV file
+            xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
+            # Read CSV file
+            df1=pd.read_excel(xlsx_file_path)
+
+            # Get the total number of rows
+            total_rows = len(df1)
+
+            # Create a donut chart of company names
+            companies = df1["Company Name"].value_counts()
+            fig = go.Figure(data=[go.Pie(labels=companies.index, values=companies.values, hole=0.5, textinfo="none")])
+
+            # Update the layout of the donut chart
+            fig.update_layout(
+                width=480,
+                height=400,
+                title={'text':'<b>Number Of Uploaded Documents by Company<b>',
+                       'y': 0.9,
+                       'x': 0.5,
+                       'xanchor': 'center',
+                       'yanchor': 'top'
+                       },
+                annotations=[dict(text="Total: " + str(total_rows), font_size=20, showarrow=False)],
+                legend=dict(
+                    x=0.75,
+                    y=0.5,
+                    
+                    bgcolor='white',
+                    bordercolor='white',
+                    borderwidth=0.5
+                )
+                
+            )
+
+            st.plotly_chart(fig)
+        
 
 def doc_table_1():
     col4,col5,col6 = st.columns(3)
@@ -240,28 +301,42 @@ def last_analysis():
         st.metric(label= 'Pending Documents',value=numerize(pending_documents,2))
         
 def donut_chart():
-    dir_path = os.path.dirname(os.path.realpath(__file__))
+    Q7,Q8=st.columns(2)
+    with Q7:
+        dir_path = os.path.dirname(os.path.realpath(__file__))
 
-    #Create file path for CSV file
-    xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
-    # Read CSV file
-    df1=pd.read_excel(xlsx_file_path)
+        #Create file path for CSV file
+        xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
+        # Read CSV file
+        df1=pd.read_excel(xlsx_file_path)
 
-    # Get the total number of rows
-    total_rows = len(df1)
+        # Get the total number of rows
+        total_rows = len(df1)
 
-    # Create a donut chart of company names
-    companies = df1["Company Name"].value_counts()
-    fig = go.Figure(data=[go.Pie(labels=companies.index, values=companies.values, hole=0.5, textinfo="none")])
+        # Create a donut chart of company names
+        companies = df1["Company Name"].value_counts()
+        fig = go.Figure(data=[go.Pie(labels=companies.index, values=companies.values, hole=0.5, textinfo="none")])
 
-    # Update the layout of the donut chart
-    fig.update_layout(title="Uploaded Documents by each Company",
-                    annotations=[dict(text="Total: " + str(total_rows), font_size=20, showarrow=False)])
+        # Update the layout of the donut chart
+        fig.update_layout(title="Number Of Uploaded Documents by Company",
+                        annotations=[dict(text="Total: " + str(total_rows), font_size=20, showarrow=False)])
 
-    # Display the total number of rows and the donut chart
-    st.write("Total number of rows:", total_rows)
-    st.plotly_chart(fig)
-        
+        st.plotly_chart(fig)
+    with Q8:
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+
+        #Create file path for CSV file
+        xlsx_file_path = os.path.join(dir_path, 'pages/sample_excel.xlsx')
+        # Read CSV file
+        df1=pd.read_excel(xlsx_file_path)
+        total_processing_time = df1['Processing Time'].sum()
+       #st.header('NEW EXTRACTION OF DATA')
+       #st.subheader('Total Processing Time')
+       #st.write(f'{total_processing_time} seconds')
+        fig = px.pie(df1, values='Processing Time', names='Company Name',title='<b>Total Processing Time by Company</b>')
+        st.plotly_chart(fig, use_container_width=True)
+
+       
 st.sidebar.write("Logout")
 if st.sidebar.button("Click to Logout"):
     # Clear session state
@@ -269,14 +344,13 @@ if st.sidebar.button("Click to Logout"):
 # st.subheader("Number Of Processed Documents")
 # extract_insert_to_xlsx_file()
 # pie_chart_create()
-
 doc_table()
+#donut_chart()
 doc_table_1()
-donut_chart()
 #area_analys()
-total_by_date()
-due_by_invoice()
-last_analysis()
+#total_by_date()
+#due_by_invoice()
+#last_analysis()
 #chart_label()
 #doc_table_2()
 #pie_chart()
